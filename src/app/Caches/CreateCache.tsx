@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActionGroup,
   Alert,
@@ -15,12 +15,23 @@ import {
   SelectVariant,
   TextArea,
   TextInput,
-  Title,
+  Title
 } from '@patternfly/react-core';
-import {CubeIcon} from "@patternfly/react-icons";
-import cacheService from "../../services/cacheService";
-import dataContainerService from "../../services/dataContainerService";
-import {Link} from "react-router-dom";
+import { CubeIcon } from '@patternfly/react-icons';
+import cacheService from '../../services/cacheService';
+import dataContainerService from '../../services/dataContainerService';
+
+const ButtonLink = (props: {
+  to: string
+  children: React.ReactNode
+}) => {
+  const onClick = () => {
+    history.go(props.to)
+  };
+  return (
+    <Button variant="secondary" component="a" target="_blank" onClick={}>{props.children}</Button>
+  );
+};
 
 const CreateCache: React.FunctionComponent<any> = (props) => {
   const cm = props.location.state.cacheManager;
@@ -33,7 +44,7 @@ const CreateCache: React.FunctionComponent<any> = (props) => {
   const [selectedConfigDisabled, setSelectedConfigDisabled] = useState(false);
   const [configExpanded, setConfigExpanded] = useState(false);
   const [validConfig, setValidConfig] = useState(true);
-  const [cacheAlert, setCacheAlert] = useState({message: '', display: false, success: false});
+  const [cacheAlert, setCacheAlert] = useState({ message: '', display: false, success: false });
 
   interface OptionSelect {
     value: string;
@@ -46,7 +57,7 @@ const CreateCache: React.FunctionComponent<any> = (props) => {
       .then(cacheManager => {
         let options: OptionSelect[] = [];
         cacheManager.cache_configuration_names.map(name => {
-          options.push({value: name})
+          options.push({ value: name });
         });
         setConfigs(options);
       });
@@ -98,7 +109,7 @@ const CreateCache: React.FunctionComponent<any> = (props) => {
     }
 
     try {
-      let oDOM = new DOMParser().parseFromString(trimmedConf, "text/xml");
+      let oDOM = new DOMParser().parseFromString(trimmedConf, 'text/xml');
       if (oDOM.getElementsByTagName('parsererror').length == 0) {
         isXML = true;
       }
@@ -127,20 +138,20 @@ const CreateCache: React.FunctionComponent<any> = (props) => {
 
     if (selectedConfig != null) {
       cacheService.createCacheByConfigName(name, selectedConfig)
-        .then(message => setCacheAlert({message: message.message, success: message.success, display: true}));
+        .then(message => setCacheAlert({ message: message.message, success: message.success, display: true }));
     } else {
       cacheService.createCacheWithConfiguration(name, config)
-        .then(message => setCacheAlert({message: message.message, success: message.success, display: true}));
+        .then(message => setCacheAlert({ message: message.message, success: message.success, display: true }));
     }
   };
 
   const hideCreation = () => {
-    setCacheAlert({message: '', success: false, display: false});
+    setCacheAlert({ message: '', success: false, display: false });
   };
 
   const AlertPanel = () => {
     return <React.Fragment>{cacheAlert.display ?
-      <Alert style={{margin:10}} variant={cacheAlert.success ? AlertVariant.success : AlertVariant.danger}
+      <Alert style={{ margin: 10 }} variant={cacheAlert.success ? AlertVariant.success : AlertVariant.danger}
              title={cacheAlert.message == '' ? 'Cache created correctly' : cacheAlert.message}
              action={<AlertActionCloseButton onClose={hideCreation}/>}/> :
       ''}
@@ -152,7 +163,7 @@ const CreateCache: React.FunctionComponent<any> = (props) => {
     <PageSection>
       <Title size="lg"> Create a cache in <b>{cm.name}</b> container</Title>
       <AlertPanel/>
-      <Form style={{paddingTop: 10}}>
+      <Form style={{ paddingTop: 10 }}>
         <FormGroup
           label="Name"
           isRequired
@@ -217,11 +228,10 @@ const CreateCache: React.FunctionComponent<any> = (props) => {
 
         <ActionGroup>
           <Button variant="primary" onClick={createCache}>Create</Button>
-          <Link to='/'><Button variant="secondary" component="a" target="_blank">Back</Button>
-          </Link>
+          <ButtonLink>Back</ButtonLink>
         </ActionGroup>
       </Form>
     </PageSection>
   );
-}
-export {CreateCache};
+};
+export { CreateCache };

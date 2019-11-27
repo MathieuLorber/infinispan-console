@@ -1,11 +1,13 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import {
-  Breadcrumb, BreadcrumbItem,
+  Breadcrumb,
+  BreadcrumbItem,
   Card,
   CardBody,
   CardHeader,
-  EmptyState, EmptyStateBody,
+  EmptyState,
+  EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
   Grid,
@@ -16,9 +18,9 @@ import {
   PageSection,
   Stack,
   StackItem,
-  Title,
+  Title
 } from '@patternfly/react-core';
-import cacheService from "../../services/cacheService";
+import cacheService from '../../services/cacheService';
 import {
   CubesIcon,
   DegradedIcon,
@@ -31,16 +33,11 @@ import {
   Spinner2Icon,
   StorageDomainIcon,
   UnknownIcon
-} from '@patternfly/react-icons'
-import {
-  chart_color_black_200,
-  chart_color_blue_300,
-  chart_color_green_300,
-  chart_color_green_500
-} from "@patternfly/react-tokens";
-import {ChartDonut} from "@patternfly/react-charts";
+} from '@patternfly/react-icons';
+import { chart_color_black_200, chart_color_blue_300 } from '@patternfly/react-tokens';
+import { ChartDonut } from '@patternfly/react-charts';
 
-const DetailCache: React.FunctionComponent<any> = (props) => {
+const DetailCache = (props: { location: { state: { cacheName: string } } }) => {
   const emptyDetail: DetailedInfinispanCache = {
     name: 'empty',
     started: false,
@@ -54,7 +51,7 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
     secured: false,
     has_remote_backup: false,
     rehash_in_progress: false,
-    indexing_in_progress: false,
+    indexing_in_progress: false
   };
 
   const cacheName: string = props.location.state.cacheName;
@@ -65,14 +62,14 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
   useEffect(() => {
     cacheService.retrieveFullDetail(cacheName)
       .then(detailedCache => {
-        setDetail(detailedCache)
+        setDetail(detailedCache);
       });
   }, []);
 
   useEffect(() => {
     cacheService.retrieveXSites(cacheName)
       .then(xsites => {
-        setXsite(xsites)
+        setXsite(xsites);
       });
   }, []);
 
@@ -82,20 +79,25 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
       <CardBody>
         <DisplayOpsPerformance/>
       </CardBody>
-    </Card>
+    </Card>;
   };
 
   const DisplayOpsPerformance = () => {
-    return detail.stats == undefined ?
-      <EmptyState variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={UnknownIcon}/>
-      </EmptyState> :
+    if (!detail.stats) {
+      return (
+        <EmptyState variant={EmptyStateVariant.small}>
+          <EmptyStateIcon icon={UnknownIcon}/>
+        </EmptyState>
+      );
+    }
+    return (
       <Stack height={10}>
         <StackItem><strong>Avg Reads:</strong> {detail.stats.average_read_time} ms</StackItem>
         <StackItem><strong>Avg Writes:</strong> {detail.stats.average_write_time} ms</StackItem>
         <StackItem><strong>Avg Removes</strong>: {detail.stats.average_remove_time} ms</StackItem>
         <StackItem>{'-'}</StackItem>
       </Stack>
+    );
   };
 
   const CacheContent = () => {
@@ -104,7 +106,7 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
       <CardBody>
         <DisplayCacheContent/>
       </CardBody>
-    </Card>
+    </Card>;
   };
 
   const DisplayCacheContent = () => {
@@ -118,7 +120,7 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
         <StackItem><strong>Total number of entries </strong> {detail.stats.total_number_of_entries}</StackItem>
         <StackItem><strong>Required Minimum number of nodes </strong> {detail.stats.required_minimum_number_of_nodes}
         </StackItem>
-      </Stack>
+      </Stack>;
   };
 
   const CacheLoader = () => {
@@ -127,7 +129,7 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
       <CardBody>
         <DisplayCacheLoader/>
       </CardBody>
-    </Card>
+    </Card>;
   };
 
   const DisplayCacheLoader = () => {
@@ -141,25 +143,25 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
     return detail.stats == undefined ? <EmptyState variant={EmptyStateVariant.small}>
         <EmptyStateIcon icon={UnknownIcon}/>
       </EmptyState> :
-      <div style={{height: '208px', width: '400px'}}>
+      <div style={{ height: '208px', width: '400px' }}>
         <ChartDonut
           constrainToVisibleArea={true}
-          data={[{x: 'Hits', y: detail.stats.hits},
-            {x: 'Misses', y: detail.stats.misses},
-            {x: 'Stores', y: detail.stats.stores},
-            {x: 'Retrievals', y: detail.stats.retrievals},
-            {x: 'Remove Hits', y: detail.stats.remove_hits},
-            {x: 'Removes Misses', y: detail.stats.remove_misses},
-            {x: 'Evictions', y: detail.stats.evictions}]}
-          labels={({datum}) => `${datum.x}: ${datum.y}%`}
+          data={[{ x: 'Hits', y: detail.stats.hits },
+            { x: 'Misses', y: detail.stats.misses },
+            { x: 'Stores', y: detail.stats.stores },
+            { x: 'Retrievals', y: detail.stats.retrievals },
+            { x: 'Remove Hits', y: detail.stats.remove_hits },
+            { x: 'Removes Misses', y: detail.stats.remove_misses },
+            { x: 'Evictions', y: detail.stats.evictions }]}
+          labels={({ datum }) => `${datum.x}: ${datum.y}%`}
           legendData={[
-            {name: 'Hits: ' + detail.stats.hits},
-            {name: 'Misses: ' + detail.stats.misses},
-            {name: 'Retrievals: ' + detail.stats.retrievals},
-            {name: 'Stores: ' + detail.stats.stores},
-            {name: 'Remove Hits: ' + detail.stats.remove_hits},
-            {name: 'Remove Misses: ' + detail.stats.remove_misses},
-            {name: 'Evictions: ' + detail.stats.evictions},
+            { name: 'Hits: ' + detail.stats.hits },
+            { name: 'Misses: ' + detail.stats.misses },
+            { name: 'Retrievals: ' + detail.stats.retrievals },
+            { name: 'Stores: ' + detail.stats.stores },
+            { name: 'Remove Hits: ' + detail.stats.remove_hits },
+            { name: 'Remove Misses: ' + detail.stats.remove_misses },
+            { name: 'Evictions: ' + detail.stats.evictions }
           ]}
           legendOrientation="vertical"
           legendPosition="right"
@@ -173,12 +175,12 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
           title={'' + all}
           width={400}
         />
-      </div>
+      </div>;
   };
 
-  const CacheFeature: React.FunctionComponent<any> = (props) => {
+  const CacheFeature = (props: { color: string, icon: string, label: string }) => {
     return (<LevelItem>
-      <Label style={{backgroundColor: props.color}}> {props.icon} {' ' + props.label}
+      <Label style={{ backgroundColor: props.color }}> {props.icon} {' ' + props.label}
       </Label></LevelItem>);
   };
 
@@ -214,7 +216,7 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
   };
   return (
     <PageSection>
-      <Stack gutter={"lg"}>
+      <Stack gutter={'lg'}>
         <StackItem>
           <Breadcrumb>
             <BreadcrumbItem to="/">Cluster manager</BreadcrumbItem>
@@ -225,7 +227,8 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
         </StackItem>
         <StackItem><Title size="lg"> Cache <strong>{detail.name}</strong>
           {xsite.length > 0 ?
-            <span style={{marginLeft: 10}}>Backups <strong>{xsite.map(xsite => ' ' + xsite.name + ' - ' + xsite.status)}</strong></span> : ''}
+            <span
+              style={{ marginLeft: 10 }}>Backups <strong>{xsite.map(xsite => ' ' + xsite.name + ' - ' + xsite.status)}</strong></span> : ''}
         </Title></StackItem>
         <StackItem>
           <Level>
@@ -255,4 +258,4 @@ const DetailCache: React.FunctionComponent<any> = (props) => {
   );
 };
 
-export {DetailCache};
+export { DetailCache };

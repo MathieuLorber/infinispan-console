@@ -14,6 +14,7 @@ import {DetailStats} from "@app/CacheManagers/DetailStats";
 import {DetailConfigurations} from "@app/CacheManagers/DetailConfigurations";
 import { ServerGroupIcon } from '@patternfly/react-icons'
 import { VolumeIcon } from '@patternfly/react-icons'
+import * as history from 'history';
 
 let routeFocusTimer: number;
 const getSupportModuleAsync = () => {
@@ -135,6 +136,8 @@ const routes: IAppRoute[] = [
 ];
 
 export let isLogged: Boolean = true;
+
+export const applicationHistory = history.createBrowserHistory();
 
 export let user = {
   user: 'admin',

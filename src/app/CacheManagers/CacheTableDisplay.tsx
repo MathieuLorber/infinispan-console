@@ -32,9 +32,10 @@ import {
 } from "@patternfly/react-icons";
 import {Link} from "react-router-dom";
 
-const CacheTableDisplay: React.FunctionComponent<any> = (props) => {
-  const allCaches: CacheInfo[] = props.caches;
-  const cacheManager: CacheManager = props.cacheManager;
+const CacheTableDisplay: React.FunctionComponent<any> = (props: {
+  caches:  CacheInfo[]
+  cacheManager: CacheManager
+}) => {
   const [cachesPagination, setCachesPagination] = useState({page: 1, perPage: 10})
   const [columns, setColumns] = useState(
     [{title: 'Name', transforms: [cellWidth(25)]},
@@ -47,7 +48,7 @@ const CacheTableDisplay: React.FunctionComponent<any> = (props) => {
 
   useEffect(() => {
       const initSlice = (cachesPagination.page - 1) * cachesPagination.perPage;
-      updateRows(allCaches.slice(initSlice, initSlice + cachesPagination.perPage));
+      updateRows(props.caches.slice(initSlice, initSlice + cachesPagination.perPage));
     },
     []);
 
@@ -57,7 +58,7 @@ const CacheTableDisplay: React.FunctionComponent<any> = (props) => {
       perPage: cachesPagination.perPage
     });
     const initSlice = (pageNumber - 1) * cachesPagination.perPage;
-    updateRows(allCaches.slice(initSlice, initSlice + cachesPagination.perPage));
+    updateRows(props.caches.slice(initSlice, initSlice + cachesPagination.perPage));
   };
 
   const onPerPageSelect = (_event, perPage) => {
@@ -66,7 +67,7 @@ const CacheTableDisplay: React.FunctionComponent<any> = (props) => {
       perPage: perPage
     });
     const initSlice = (cachesPagination.page - 1) * perPage;
-    updateRows(allCaches.slice(initSlice, initSlice + perPage));
+    updateRows(props.caches.slice(initSlice, initSlice + perPage));
   };
 
   const updateRows = (caches) => {
@@ -109,32 +110,21 @@ const CacheTableDisplay: React.FunctionComponent<any> = (props) => {
   };
 
   const CreateCacheButton = () => {
-    return <Link to={{
-      pathname: '/caches/create',
-      state: {
-        cacheManager: cacheManager,
-      }
-    }}>
-      <Button component="a" target="_blank" variant="link" icon={<PlusCircleIcon/>}>
+    return <Button component="a" target="_blank" variant="link" icon={<PlusCircleIcon/>}>
         Create cache
       </Button>
-    </Link>;
   };
 
-  const CacheActionLinks: React.FunctionComponent<any> = (props) => {
-    const name: string = props.name;
-
+  const CacheActionLinks = (props: {name: string}) => {
     return (<Link to={{
-      pathname: '/cache/' + name,
+      pathname: '/cache/' + props.name,
       state: {
-        cacheName: name,
+        cacheName: props.name,
       }
     }}><InfoIcon/>More</Link>);
   };
 
-  const CacheFeatures: React.FunctionComponent<any> = (props) => {
-    const cache: CacheInfo = props.cache;
-
+  const CacheFeatures: React.FunctionComponent<any> = (props: {cache: CacheInfo}) => {
     const hasFeatureColor = (feature) => {
       if (feature) {
         return chart_color_blue_500.value;
@@ -144,22 +134,22 @@ const CacheTableDisplay: React.FunctionComponent<any> = (props) => {
     };
 
     return (<Level>
-      <LevelItem><CacheFeature icon={<Spinner2Icon color={hasFeatureColor(cache.bounded)}/>}
+      <LevelItem><CacheFeature icon={<Spinner2Icon color={hasFeatureColor(props.cache.bounded)}/>}
                                tooltip={'Bounded'}/></LevelItem>
-      <LevelItem><CacheFeature icon={<StorageDomainIcon color={hasFeatureColor(cache.indexed)}/>}
+      <LevelItem><CacheFeature icon={<StorageDomainIcon color={hasFeatureColor(props.cache.indexed)}/>}
                                tooltip={'Indexed'}/></LevelItem>
-      <LevelItem><CacheFeature icon={<SaveIcon color={hasFeatureColor(cache.persistent)}/>}
+      <LevelItem><CacheFeature icon={<SaveIcon color={hasFeatureColor(props.cache.persistent)}/>}
                                tooltip={'Persisted'}/></LevelItem>
-      <LevelItem><CacheFeature icon={<ServiceIcon color={hasFeatureColor(cache.transactional)}/>}
+      <LevelItem><CacheFeature icon={<ServiceIcon color={hasFeatureColor(props.cache.transactional)}/>}
                                tooltip={'Transactional'}/></LevelItem>
-      <LevelItem><CacheFeature icon={<KeyIcon color={hasFeatureColor(cache.secured)}/>}
+      <LevelItem><CacheFeature icon={<KeyIcon color={hasFeatureColor(props.cache.secured)}/>}
                                tooltip={'Secured'}/></LevelItem>
-      <LevelItem><CacheFeature icon={<DegradedIcon color={hasFeatureColor(cache.hasRemoteBackup)}/>}
+      <LevelItem><CacheFeature icon={<DegradedIcon color={hasFeatureColor(props.cache.hasRemoteBackup)}/>}
                                tooltip={'Has remote backups'}/></LevelItem>
     </Level>);
   };
 
-  const CacheFeature: React.FunctionComponent<any> = (props) => {
+  const CacheFeature = (props: { tooltip: string, icon: string }) => {
     return (<LevelItem>
       <Tooltip position="right"
                content={
@@ -169,7 +159,7 @@ const CacheTableDisplay: React.FunctionComponent<any> = (props) => {
       </Tooltip></LevelItem>);
   };
 
-  const CacheType: React.FunctionComponent<any> = (props) => {
+  const CacheType = (props: {type: string}) => {
     return (<Label style={{backgroundColor: displayUtils.cacheTypeColor(props.type), marginRight: 15}}>
       {props.type}</Label>);
   };
@@ -179,22 +169,22 @@ const CacheTableDisplay: React.FunctionComponent<any> = (props) => {
       <StackItem>
         <CreateCacheButton/>
         <Link to={{
-          pathname: 'container/' + cacheManager.name + '/configurations/',
+          pathname: 'container/' + props.cacheManager.name + '/configurations/',
           state: {
-            cacheManager: cacheManager.name
+            cacheManager: props.cacheManager.name
           }
         }}> <Button variant="link" icon={<CatalogIcon/>}>Configurations </Button>{' '}
         </Link>
       </StackItem>
       <StackItem>
         <Pagination
-          itemCount={allCaches.length}
+          itemCount={props.caches.length}
           perPage={cachesPagination.perPage}
           page={cachesPagination.page}
           onSetPage={onSetPage}
           widgetId="pagination-caches"
           onPerPageSelect={onPerPageSelect}
-          isCompact
+          isCompact={true}
         />
       </StackItem>
       <StackItem>

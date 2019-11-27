@@ -8,7 +8,7 @@ import icon from '!!url-loader!@app/assets/images/infinispan_icon.svg';
 
 const images = {};
 
-const InfinispanLogin: React.FunctionComponent<any> = (props) => {
+const InfinispanLogin: React.FunctionComponent<void> = () => {
 
   return (
       <LoginPage footerListVariants="inline"

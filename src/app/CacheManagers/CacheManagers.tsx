@@ -49,7 +49,7 @@ import tasksService from "../../services/tasksService";
 import countersService from "../../services/countersService";
 import {CacheTableDisplay} from "@app/CacheManagers/CacheTableDisplay";
 
-const CacheManagers: React.FunctionComponent<any> = (props) => {
+const CacheManagers: React.FunctionComponent<void> = () => {
   const [cm, setCacheManager] = useState<undefined | CacheManager>(undefined);
   const [activeTabKey, setActiveTabKey] = useState(0);
   const [stats, setStats] = useState<CacheManagerStats>({
